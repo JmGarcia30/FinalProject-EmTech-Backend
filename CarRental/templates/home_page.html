@@ -1,5 +1,138 @@
-<!-- Landing page of the Car Rental System -->
-<h1>Welcome to the Car Rental System</h1>
-<p>Your one-stop solution for renting cars effortlessly.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Rental System - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<a href="{% url 'car_list' %}">View Available Cars</a>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .hero-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.98);
+            padding: 70px 90px;
+            border-radius: 8px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+            max-width: 750px;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .brand {
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #1e3c72;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: #1a1a1a;
+            margin-bottom: 25px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        p {
+            font-size: 1.15rem;
+            color: #555;
+            margin-bottom: 45px;
+            line-height: 1.7;
+            max-width: 550px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 16px 45px;
+            background: #1e3c72;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(30, 60, 114, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .cta-button:hover {
+            background: #2a5298;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(30, 60, 114, 0.4);
+        }
+
+        .features {
+            display: flex;
+            gap: 45px;
+            margin-top: 50px;
+            justify-content: center;
+            padding-top: 40px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .feature {
+            text-align: center;
+            flex: 1;
+            max-width: 150px;
+        }
+
+        .feature-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 8px;
+        }
+
+        .feature-text {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-container">
+        <div class="brand">Premium Car Rental</div>
+        <h1>Drive Your Perfect Journey</h1>
+        <p>Experience hassle-free car rental with our extensive fleet of well-maintained vehicles. Quality service and competitive rates guaranteed.</p>
+        <a href="{% url 'car_list' %}" class="cta-button">View Available Cars</a>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-title">Quick Booking</div>
+                <div class="feature-text">Fast and simple reservation process</div>
+            </div>
+            <div class="feature">
+                <div class="feature-title">Best Value</div>
+                <div class="feature-text">Competitive pricing with no hidden fees</div>
+            </div>
+            <div class="feature">
+                <div class="feature-title">24/7 Support</div>
+                <div class="feature-text">Round-the-clock customer service</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

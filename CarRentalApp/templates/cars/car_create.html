@@ -1,24 +1,203 @@
-<h1>Add New Car</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Car - Car Rental System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<form method="POST">
-    {% csrf_token %}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 30px;
+        }
 
-    Brand: <input type="text" name="brand"><br><br>
-    Model: <input type="text" name="model"><br><br>
-    Year: <input type="number" name="year"><br><br>
-    Plate Number: <input type="text" name="plate_number"><br><br>
-    Type: <input type="text" name="type"><br><br>
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
 
-    Status:
-    <select name="status">
-        <option value="Available">Available</option>
-        <option value="Rented">Rented</option>
-        <option value="Maintenance">Maintenance</option>
-    </select><br><br>
+        h1 {
+            color: #1a1a1a;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
 
-    Rate per day: <input type="number" step="0.01" name="rental_rate_per_day"><br><br>
+        .form-group {
+            margin-bottom: 25px;
+        }
 
-    <button type="submit">Save</button>
-</form>
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
 
-<a href="{% url 'car_list' %}">Back</a>
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #1e3c72;
+            box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #e1e8ed;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        input[type="file"]:hover {
+            border-color: #1e3c72;
+            background: #f8f9ff;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #1e3c72;
+            color: white;
+            box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #2a5298;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(30, 60, 114, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f5f7fa;
+            color: #1e3c72;
+            border: 2px solid #e1e8ed;
+        }
+
+        .btn-secondary:hover {
+            background: #e1e8ed;
+        }
+
+        .file-info {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add New Car</h1>
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="brand">Brand</label>
+                    <input type="text" id="brand" name="brand" required placeholder="e.g., Toyota">
+                </div>
+
+                <div class="form-group">
+                    <label for="model">Model</label>
+                    <input type="text" id="model" name="model" required placeholder="e.g., Camry">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="year">Year</label>
+                    <input type="number" id="year" name="year" required placeholder="e.g., 2024">
+                </div>
+
+                <div class="form-group">
+                    <label for="plate_number">Plate Number</label>
+                    <input type="text" id="plate_number" name="plate_number" required placeholder="e.g., ABC-1234">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="type">Type</label>
+                    <input type="text" id="type" name="type" required placeholder="e.g., Sedan, SUV">
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" name="status">
+                        <option value="Available">Available</option>
+                        <option value="Rented">Rented</option>
+                        <option value="Maintenance">Maintenance</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="rental_rate_per_day">Rate per Day ($)</label>
+                <input type="number" id="rental_rate_per_day" name="rental_rate_per_day" step="0.01" required placeholder="e.g., 50.00">
+            </div>
+
+            <div class="form-group">
+                <label for="image">Car Image</label>
+                <input type="file" id="image" name="image" accept="image/*">
+                <div class="file-info">Upload a clear image of the car (optional)</div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Car</button>
+                <a href="{% url 'car_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

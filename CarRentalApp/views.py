@@ -18,6 +18,7 @@ def car_create(request):
         type = request.POST.get("type")
         status = request.POST.get("status")
         rate = request.POST.get("rental_rate_per_day")
+        image = request.FILES.get("image")
 
         Car.objects.create(
             brand=brand,
@@ -26,7 +27,8 @@ def car_create(request):
             plate_number=plate,
             type=type,
             status=status,
-            rental_rate_per_day=rate
+            rental_rate_per_day=rate,
+            image=image
         )
 
         return redirect("car_list")
@@ -46,6 +48,11 @@ def car_update(request, id):
         car.type = request.POST.get("type")
         car.status = request.POST.get("status")
         car.rental_rate_per_day = request.POST.get("rental_rate_per_day")
+        
+        image = request.FILES.get("image")
+        if image:
+            car.image = image
+        
         car.save()
 
         return redirect("car_list")
