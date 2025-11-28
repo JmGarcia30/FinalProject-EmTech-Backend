@@ -1,0 +1,24 @@
+<h1>Add New Car</h1>
+
+<form method="POST">
+    {% csrf_token %}
+
+    Brand: <input type="text" name="brand"><br><br>
+    Model: <input type="text" name="model"><br><br>
+    Year: <input type="number" name="year"><br><br>
+    Plate Number: <input type="text" name="plate_number"><br><br>
+    Type: <input type="text" name="type"><br><br>
+
+    Status:
+    <select name="status">
+        <option value="Available">Available</option>
+        <option value="Rented">Rented</option>
+        <option value="Maintenance">Maintenance</option>
+    </select><br><br>
+
+    Rate per day: <input type="number" step="0.01" name="rental_rate_per_day"><br><br>
+
+    <button type="submit">Save</button>
+</form>
+
+<a href="{% url 'car_list' %}">Back</a>

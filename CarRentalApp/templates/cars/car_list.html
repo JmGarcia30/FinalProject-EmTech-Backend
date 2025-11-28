@@ -1,0 +1,31 @@
+<h1>Car List</h1>
+
+<a href="{% url 'car_create' %}">Add New Car</a>
+
+<table border="1" cellpadding="10">
+    <tr>
+        <th>Brand</th>
+        <th>Model</th>
+        <th>Plate</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Rate</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for car in cars %}
+    <tr>
+        <td>{{ car.brand }}</td>
+        <td>{{ car.model }}</td>
+        <td>{{ car.plate_number }}</td>
+        <td>{{ car.type }}</td>
+        <td>{{ car.status }}</td>
+        <td>{{ car.rental_rate_per_day }}</td>
+        <td>
+            <a href="{% url 'car_update' car.id %}">Edit</a> |
+            <a href="{% url 'car_delete' car.id %}">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{% url 'home' %}">Back to Home</a>
