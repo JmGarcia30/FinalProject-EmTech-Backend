@@ -21,12 +21,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from CarRental import views
+from CarRentalApp import views as app_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home_page, name='home'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path('api/cars/', app_views.api_car_list, name='api_car_list'),
     path('cars/', include('CarRentalApp.urls')),
 ]
 

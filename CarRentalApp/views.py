@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from .models import Car
+from .serializers import CarSerializer
 
 
 # -------- LIST --------
@@ -83,3 +86,11 @@ def car_delete(request, id):
         return redirect("car_list")
 
     return render(request, "cars/car_delete.html", {"car": car})
+
+
+# -------- API VIEW FOR CAR LISTING --------
+@api_view(['GET'])
+def api_car_list(request):
+    cars = Car.objects.all()
+    serializer = CarSerializer(cars, many=True)
+    return Response(serializer.data)
