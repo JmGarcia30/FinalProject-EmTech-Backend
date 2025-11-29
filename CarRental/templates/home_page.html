@@ -113,7 +113,15 @@
     </style>
 </head>
 <body>
-    <div class="hero-container">
+    <div class="hero-container" style="position:relative;">
+        <div style="position:absolute; top:24px; right:28px; display:flex; gap:10px;">
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'car_list' %}" style="font-size:.7rem; font-weight:600; letter-spacing:.5px; text-decoration:none; background:#1e3c72; color:#fff; padding:7px 12px; border-radius:4px;">Cars</a>
+                <a href="{% url 'logout' %}" style="font-size:.7rem; font-weight:600; letter-spacing:.5px; text-decoration:none; background:#e0e0e0; color:#1a1a1a; padding:7px 12px; border-radius:4px;">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}" style="font-size:.7rem; font-weight:600; letter-spacing:.5px; text-decoration:none; background:#1e3c72; color:#fff; padding:7px 12px; border-radius:4px;">Admin Login</a>
+            {% endif %}
+        </div>
         <div class="brand">Premium Car Rental</div>
         <h1>Drive Your Perfect Journey</h1>
         <p>Experience hassle-free car rental with our extensive fleet of well-maintained vehicles. Quality service and competitive rates guaranteed.</p>

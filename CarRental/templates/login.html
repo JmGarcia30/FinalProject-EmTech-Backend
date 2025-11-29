@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login - Car Rental System</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:linear-gradient(135deg,#1e3c72 0%, #2a5298 100%); min-height:100vh; display:flex; align-items:center; justify-content:center; }
+        .card { background:#fff; width:100%; max-width:420px; padding:50px 55px; border-radius:8px; box-shadow:0 25px 70px rgba(0,0,0,.35); }
+        h1 { font-size:1.9rem; font-weight:700; margin-bottom:30px; color:#1a1a1a; }
+        form { width:100%; }
+        .form-group { margin-bottom:22px; }
+        label { display:block; font-weight:600; font-size:.9rem; margin-bottom:8px; color:#333; letter-spacing:.5px; }
+        input[type=text], input[type=password] { width:100%; padding:14px 16px; border:2px solid #e1e6ec; border-radius:6px; font-size:.95rem; transition:.25s; font-family:inherit; }
+        input[type=text]:focus, input[type=password]:focus { outline:none; border-color:#1e3c72; box-shadow:0 0 0 3px rgba(30,60,114,.12); }
+        .actions { margin-top:10px; }
+        button { width:100%; padding:15px 18px; background:#1e3c72; color:#fff; font-weight:600; font-size:1rem; border:none; border-radius:6px; cursor:pointer; transition:.3s; letter-spacing:.5px; }
+        button:hover { background:#2a5298; box-shadow:0 8px 24px rgba(30,60,114,.35); }
+        .meta { margin-top:25px; text-align:center; font-size:.8rem; color:#777; }
+        .error { background:#f8d7da; color:#721c24; padding:12px 14px; border-left:4px solid #dc3545; border-radius:4px; font-size:.85rem; margin-bottom:18px; }
+        .top-link { text-align:center; margin-top:15px; }
+        .top-link a { color:#1e3c72; text-decoration:none; font-size:.85rem; font-weight:600; }
+        .top-link a:hover { text-decoration:underline; }
+        .nav-back { position:absolute; top:25px; left:30px; }
+        .nav-back a { color:#fff; text-decoration:none; font-size:.85rem; font-weight:600; background:rgba(255,255,255,.15); padding:8px 14px; border-radius:4px; backdrop-filter:blur(3px); }
+        .nav-back a:hover { background:rgba(255,255,255,.30); }
+    </style>
+</head>
+<body>
+    <div class="nav-back"><a href="{% url 'home' %}">Back to Home</a></div>
+    <div class="card">
+        <h1>Admin Login</h1>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="error">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <form method="POST" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" autocomplete="username" required />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" autocomplete="current-password" required />
+            </div>
+            <div class="actions">
+                <button type="submit">Sign In</button>
+            </div>
+        </form>
+        <div class="meta">Only staff accounts can access the admin panel.</div>
+    </div>
+</body>
+</html>

@@ -25,6 +25,8 @@ from CarRental import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home_page, name='home'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
     path('cars/', include('CarRentalApp.urls')),
 ]
 

@@ -1,15 +1,23 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from .models import Car
 
 
 # -------- LIST --------
+@login_required(login_url='login')
 def car_list(request):
+    # Optional: restrict further to staff only
+    if not request.user.is_staff:
+        return redirect('home')
     cars = Car.objects.all()
     return render(request, "cars/car_list.html", {"cars": cars})
 
 
 # -------- CREATE --------
+@login_required(login_url='login')
 def car_create(request):
+    if not request.user.is_staff:
+        return redirect('home')
     if request.method == "POST":
         brand = request.POST.get("brand")
         model = request.POST.get("model")
@@ -37,8 +45,11 @@ def car_create(request):
     
 
 # -------- UPDATE --------
+@login_required(login_url='login')
 def car_update(request, id):
     car = get_object_or_404(Car, id=id)
+    if not request.user.is_staff:
+        return redirect('home')
 
     if request.method == "POST":
         car.brand = request.POST.get("brand")
@@ -61,8 +72,11 @@ def car_update(request, id):
 
 
 # -------- DELETE --------
+@login_required(login_url='login')
 def car_delete(request, id):
     car = get_object_or_404(Car, id=id)
+    if not request.user.is_staff:
+        return redirect('home')
 
     if request.method == "POST":
         car.delete()
