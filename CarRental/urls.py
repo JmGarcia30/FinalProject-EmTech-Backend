@@ -29,7 +29,10 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('api/cars/', app_views.api_car_list, name='api_car_list'),
+    path('api/customers/signup/', app_views.api_customer_signup, name='api_customer_signup'),
+    path('api/customers/login/', app_views.api_customer_login, name='api_customer_login'),
     path('cars/', include('CarRentalApp.urls')),
+    
 ]
 
 if settings.DEBUG:

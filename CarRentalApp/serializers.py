@@ -10,10 +10,13 @@ class CarSerializer(serializers.ModelSerializer):
 
 
 class CustomerSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, min_length=6)
+    
     class Meta:
         model = Customer
-        fields = ['id', 'first_name', 'last_name', 'email', 'phone', 
-                  'address', 'license_number']
+        fields = ['id', 'first_name', 'last_name', 'email', 'password', 'phone', 
+                  'address']
+        extra_kwargs = {'password': {'write_only': True}}
 
 
 class RentalTransactionSerializer(serializers.ModelSerializer):
