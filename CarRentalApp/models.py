@@ -18,6 +18,43 @@ class Car(models.Model):
     rental_rate_per_day = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='cars/', blank=True, null=True)
 
+    # -------------------------------------
+    # 🚨 KEY SPECIFICATIONS FIELDS ADDED
+    # -------------------------------------
+    seats = models.IntegerField(
+        default=5,
+        help_text="Number of seats in the vehicle."
+    )
+    fuel_type = models.CharField(
+        max_length=50,
+        default="Gasoline",
+        blank=True, 
+        null=True
+    )
+    transmission = models.CharField(
+        max_length=50,
+        default="Automatic",
+        blank=True,
+        null=True
+    )
+    color = models.CharField(
+        max_length=50,
+        default="White",
+        blank=True,
+        null=True
+    )
+    engine_size = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text="e.g., '1.5L' or 'V6'"
+    )
+    mileage = models.IntegerField(
+        default=0,
+        help_text="Odometer reading in kilometers."
+    )
+    # -------------------------------------
+
     def __str__(self):
         return f"{self.brand} {self.model} ({self.plate_number})"
 

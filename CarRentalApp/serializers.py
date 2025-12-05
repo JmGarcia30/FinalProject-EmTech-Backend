@@ -5,8 +5,24 @@ from .models import Car, Customer, RentalTransaction, Payment
 class CarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Car
-        fields = ['id', 'brand', 'model', 'year', 'plate_number', 'type', 
-                  'status', 'rental_rate_per_day', 'image']
+        fields = [
+            'id', 
+            'brand', 
+            'model', 
+            'year', 
+            'plate_number', 
+            'type', 
+            'status', 
+            'rental_rate_per_day', 
+            'image',
+            # 🚨 NEW KEY SPECIFICATION FIELDS ADDED HERE:
+            'seats',
+            'fuel_type',
+            'transmission',
+            'color',
+            'engine_size',
+            'mileage'
+        ]
 
 
 class CustomerSerializer(serializers.ModelSerializer):
