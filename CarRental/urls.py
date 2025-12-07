@@ -1,22 +1,10 @@
-"""
-URL configuration for CarRental project.
+# File: CarRental/urls.py (Project Level)
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+... (The existing comments) ...
 """
 from django.contrib import admin
-from django.urls import path
-from django.urls import include
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -28,9 +16,16 @@ urlpatterns = [
     path('', views.home_page, name='home'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    
+    #  EXISTING API PATHS 
     path('api/cars/', app_views.api_car_list, name='api_car_list'),
     path('api/customers/signup/', app_views.api_customer_signup, name='api_customer_signup'),
     path('api/customers/login/', app_views.api_customer_login, name='api_customer_login'),
+    
+    #  NEW CRITICAL API PATHS ADDED HERE 
+    path('api/submit-rental-request/', app_views.api_submit_rental_request, name='api_submit_rental_request'),
+    
+    #  INCLUDE APP URLS (Staff views and CRUD) 
     path('cars/', include('CarRentalApp.urls')),
     
 ]

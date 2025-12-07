@@ -160,7 +160,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Edit Car</h1>
+        <h1>Edit Car 🛠️</h1>
         
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
@@ -208,6 +208,51 @@
             <div class="form-group">
                 <label for="rental_rate_per_day">Rate per Day ($)</label>
                 <input type="number" id="rental_rate_per_day" name="rental_rate_per_day" step="0.01" value="{{ car.rental_rate_per_day }}" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="seats">Seats</label>
+                    <input type="number" id="seats" name="seats" value="{{ car.seats }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="mileage">Mileage (km)</label>
+                    <input type="number" id="mileage" name="mileage" value="{{ car.mileage }}" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="fuel_type">Fuel Type</label>
+                    <select id="fuel_type" name="fuel_type">
+                        <option value="Gasoline" {% if car.fuel_type == "Gasoline" %}selected{% endif %}>Gasoline</option>
+                        <option value="Diesel" {% if car.fuel_type == "Diesel" %}selected{% endif %}>Diesel</option>
+                        <option value="Electric" {% if car.fuel_type == "Electric" %}selected{% endif %}>Electric</option>
+                        <option value="Hybrid" {% if car.fuel_type == "Hybrid" %}selected{% endif %}>Hybrid</option>
+                        <option value="Other" {% if car.fuel_type == "Other" %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="transmission">Transmission</label>
+                    <select id="transmission" name="transmission">
+                        <option value="Automatic" {% if car.transmission == "Automatic" %}selected{% endif %}>Automatic</option>
+                        <option value="Manual" {% if car.transmission == "Manual" %}selected{% endif %}>Manual</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="color">Color</label>
+                    <input type="text" id="color" name="color" value="{{ car.color }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="engine_size">Engine Size (e.g., 1.5L or V6)</label>
+                    <input type="text" id="engine_size" name="engine_size" value="{{ car.engine_size }}">
+                </div>
             </div>
 
             <div class="form-group">

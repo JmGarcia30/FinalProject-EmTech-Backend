@@ -18,9 +18,6 @@ class Car(models.Model):
     rental_rate_per_day = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='cars/', blank=True, null=True)
 
-    # -------------------------------------
-    # 🚨 KEY SPECIFICATIONS FIELDS ADDED
-    # -------------------------------------
     seats = models.IntegerField(
         default=5,
         help_text="Number of seats in the vehicle."
@@ -53,7 +50,6 @@ class Car(models.Model):
         default=0,
         help_text="Odometer reading in kilometers."
     )
-    # -------------------------------------
 
     def __str__(self):
         return f"{self.brand} {self.model} ({self.plate_number})"
@@ -98,3 +94,42 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"Payment {self.id} for Transaction {self.transaction.id}"
+    
+
+
+class RentalRequest(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('APPROVED', 'Approved'),
+        ('REJECTED', 'Rejected'),
+        ('CANCELLED', 'Cancelled'),
+        ('COMPLETED', 'Completed'),
+    ]
+
+    car = models.ForeignKey(
+        'Car', 
+        on_delete=models.PROTECT, 
+        related_name='rental_requests',
+        help_text="The car being requested for rental."
+    )
+    customer = models.ForeignKey(
+        'Customer', 
+        on_delete=models.PROTECT, 
+        related_name='customer_requests',
+        help_text="The customer who placed the request."
+    )
+    request_date = models.DateTimeField(
+        default=timezone.now,
+        help_text="The date and time the request was submitted."
+    )
+    pickup_date = models.DateField()
+    return_date = models.DateField()
+    status = models.CharField(
+        max_length=10, 
+        choices=STATUS_CHOICES, 
+        default='PENDING',
+        help_text="Current status of the rental request."
+    )
+
+    def __str__(self):
+        return f"Request for {self.car.brand} {self.car.model} by {self.customer.first_name} ({self.status})"

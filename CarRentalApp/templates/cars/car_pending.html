@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Requests - Car Rental System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            /* Primary color border */
+            border-bottom: 3px solid #1e3c72; 
+        }
+
+        h1 {
+            /* Primary color */
+            color: #1e3c72;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .request-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .request-card {
+            /* Light, neutral background */
+            background: #f0f4f8; 
+            border: 1px solid #dcdfe4;
+            border-radius: 10px;
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 2fr 3fr 1fr; 
+            align-items: stretch; /* Stretch content vertically */
+            box-shadow: 0 4px 15px rgba(30, 60, 114, 0.05); /* Shadow using the primary color */
+        }
+
+        .request-details {
+            padding-right: 30px;
+            border-right: 1px solid #dcdfe4;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        /* Adjusted padding and border for the dates section */
+        .request-dates {
+            padding: 0 30px;
+            border-right: 1px solid #dcdfe4;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around; /* Spreads the date info */
+        }
+
+
+        .car-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .customer-info {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            color: #1a1a1a;
+            font-weight: 600;
+            margin-top: 3px;
+        }
+
+        .request-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Increased gap */
+            padding-left: 30px;
+            justify-content: center;
+        }
+        
+        .request-actions form {
+            display: block;
+        }
+
+        .request-actions button {
+            width: 100%; 
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s ease;
+            text-align: center;
+        }
+
+        .btn-approve {
+            background: #2ecc71; 
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #27ae60;
+        }
+
+        /* Rejected button now uses a dark grey/red for less aggressive look */
+        .btn-reject {
+            background: #d1281b; 
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #a72924;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn-secondary {
+            /* Primary color theme */
+            background: #f5f7fa;
+            color: #1e3c72;
+            border: 2px solid #1e3c72;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            /* Primary color theme */
+            background: #1e3c72;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+        }
+
+        .empty-state h2 {
+            color: #1a1a1a;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><span style="font-size:1.5rem; vertical-align:middle;"></span> Pending Rental Requests</h1>
+            <a href="{% url 'car_list' %}" class="btn btn-secondary" style="padding: 10px 20px;">Car Inventory</a>
+        </div>
+
+        {% if pending_requests %}
+        <div class="request-grid">
+            {% for request in pending_requests %}
+            <div class="request-card">
+                
+                <div class="request-details">
+                    <div class="car-title">{{ request.car.brand }} {{ request.car.model }} ({{ request.car.plate_number }})</div>
+                    <div class="customer-info">
+                        Requested by: **{{ request.customer.first_name }} {{ request.customer.last_name }}**
+                    </div>
+                    
+                    <div class="info-label">Customer Contact</div>
+                    <div class="info-value">{{ request.customer.phone }} | {{ request.customer.email }}</div>
+                </div>
+
+                <div class="request-dates">
+                    <div class="info-label">Pickup Date</div>
+                    <div class="info-value">{{ request.pickup_date|date:"F d, Y" }}</div>
+                    
+                    <div class="info-label">Return Date</div>
+                    <div class="info-value">{{ request.return_date|date:"F d, Y" }}</div>
+
+                    <div class="info-label">Request Submitted</div>
+                    <div class="info-value">{{ request.request_date|date:"M d, H:i" }}</div>
+                </div>
+
+                <div class="request-actions">
+                    <form method="POST" action="{% url 'request_approve' request.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-approve">
+                            Approve
+                        </button>
+                    </form>
+                    
+                    <form method="POST" action="{% url 'request_reject' request.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-reject">
+                            Reject
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% else %}
+        <div class="empty-state">
+            <h2>No Pending Requests!</h2>
+            <p>All rental requests have been reviewed and processed.</p>
+        </div>
+        {% endif %}
+
+        <div class="back-link">
+            <a href="{% url 'home' %}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

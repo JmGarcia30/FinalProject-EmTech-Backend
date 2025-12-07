@@ -29,7 +29,7 @@
 
         .header {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-between; 
             align-items: center;
             margin-bottom: 40px;
             padding-bottom: 20px;
@@ -42,6 +42,11 @@
             font-weight: 700;
         }
 
+        .header-actions {
+            display: flex;
+            gap: 15px; 
+        }
+        
         .btn {
             padding: 12px 30px;
             border-radius: 25px;
@@ -61,6 +66,19 @@
             background: #2a5298;
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(30, 60, 114, 0.4);
+        }
+
+        /* Style for the Pending Requests button */
+        .btn-pending {
+            background: #e74c3c; 
+            color: white;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-pending:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
         }
 
         .btn-secondary {
@@ -240,7 +258,18 @@
     <div class="container">
         <div class="header">
             <h1>Car Inventory</h1>
-            <a href="{% url 'car_create' %}" class="btn btn-primary">+ Add New Car</a>
+            
+            <div class="header-actions">
+                {# Check if the user is staff before showing the Pending Requests link #}
+                {% if request.user.is_staff %}
+                    <a href="{% url 'pending_requests' %}" class="btn btn-pending">
+                        Pending Requests
+                    </a>
+                {% endif %}
+                
+                <a href="{% url 'car_create' %}" class="btn btn-primary">+ Add New Car</a>
+            </div>
+            
         </div>
 
         {% if cars %}
