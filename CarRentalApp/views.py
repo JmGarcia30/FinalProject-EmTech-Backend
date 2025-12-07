@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Car, Customer, RentalTransaction, RentalRequest, Payment, Notification
-from .serializers import CarSerializer, CustomerSerializer 
+from .serializers import CarSerializer, CustomerSerializer, CustomerUpdateSerializer 
 from decimal import Decimal 
 from datetime import date 
 
@@ -415,6 +415,29 @@ def api_customer_login(request):
         }, status=status.HTTP_404_NOT_FOUND)
 
 
+@api_view(['PUT', 'PATCH'])
+@transaction.atomic
+def api_customer_update(request):
+    """
+    Update a customer's profile. Uses current_email to locate the record; allows changing email.
+    """
+    current_email = request.data.get('current_email')
+    if not current_email:
+        return Response({'error': 'current_email is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        customer = Customer.objects.get(email=current_email)
+    except Customer.DoesNotExist:
+        return Response({'error': 'Customer not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = CustomerUpdateSerializer(customer, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'Profile updated successfully', 'customer': serializer.data}, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 # --------------------------------------------------------------------------
 # PAYMENT API VIEWS
 # --------------------------------------------------------------------------
@@ -647,6 +670,32 @@ def api_mark_notification_read(request):
         
         return Response({
             'message': 'Notification marked as read.'
+        }, status=status.HTTP_200_OK)
+        
+    except Notification.DoesNotExist:
+        return Response({
+            'error': 'Notification not found.'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['DELETE'])
+def api_delete_notification(request):
+    """
+    Delete a notification by ID.
+    """
+    notification_id = request.data.get('notification_id')
+    
+    if not notification_id:
+        return Response({
+            'error': 'notification_id is required.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        notification = Notification.objects.get(id=notification_id)
+        notification.delete()
+        
+        return Response({
+            'message': 'Notification deleted successfully.'
         }, status=status.HTTP_200_OK)
         
     except Notification.DoesNotExist:

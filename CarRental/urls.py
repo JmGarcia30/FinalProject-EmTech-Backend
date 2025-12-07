@@ -21,6 +21,7 @@ urlpatterns = [
     path('api/cars/', app_views.api_car_list, name='api_car_list'),
     path('api/customers/signup/', app_views.api_customer_signup, name='api_customer_signup'),
     path('api/customers/login/', app_views.api_customer_login, name='api_customer_login'),
+    path('api/customers/update/', app_views.api_customer_update, name='api_customer_update'),
     
     #  NEW CRITICAL API PATHS ADDED HERE 
     path('api/submit-rental-request/', app_views.api_submit_rental_request, name='api_submit_rental_request'),
@@ -28,6 +29,7 @@ urlpatterns = [
     path('api/submit-payment/', app_views.api_submit_payment, name='api_submit_payment'),
     path('api/notifications/', app_views.api_get_notifications, name='api_get_notifications'),
     path('api/notifications/mark-read/', app_views.api_mark_notification_read, name='api_mark_notification_read'),
+    path('api/notifications/delete/', app_views.api_delete_notification, name='api_delete_notification'),
     
     #  INCLUDE APP URLS (Staff views and CRUD) 
     path('cars/', include('CarRentalApp.urls')),

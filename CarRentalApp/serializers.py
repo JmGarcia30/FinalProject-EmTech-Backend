@@ -38,6 +38,28 @@ class CustomerSerializer(serializers.ModelSerializer):
         fields = ['id', 'first_name', 'last_name', 'email', 'password', 'phone', 
                   'address', 'license_number'] 
         extra_kwargs = {'password': {'write_only': True}}
+
+
+class CustomerUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating Customer data without requiring password every time."""
+    password = serializers.CharField(write_only=True, required=False, allow_blank=True)
+
+    class Meta:
+        model = Customer
+        fields = ['id', 'first_name', 'last_name', 'email', 'password', 'phone', 'address', 'license_number']
+        extra_kwargs = {
+            'email': {'required': False},
+            'password': {'write_only': True, 'required': False},
+        }
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        if password:
+            instance.password = password
+        instance.save()
+        return instance
         
 
 # --------------------------------------------------------------------------
