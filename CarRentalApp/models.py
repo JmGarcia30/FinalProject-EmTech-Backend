@@ -90,7 +90,7 @@ class Payment(models.Model):
     transaction = models.ForeignKey(RentalTransaction, on_delete=models.CASCADE, related_name="payments")
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
     payment_date = models.DateField(default=timezone.now)
-    method = models.CharField(max_length=50)  # Cash, GCash, Card, etc.
+    method = models.CharField(max_length=50) 
 
     def __str__(self):
         return f"Payment {self.id} for Transaction {self.transaction.id}"
@@ -133,3 +133,18 @@ class RentalRequest(models.Model):
 
     def __str__(self):
         return f"Request for {self.car.brand} {self.car.model} by {self.customer.first_name} ({self.status})"
+
+
+class Notification(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='notifications')
+    rental_request = models.ForeignKey(RentalRequest, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Notification for {self.customer.email} - {self.title}"

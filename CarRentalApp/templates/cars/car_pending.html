@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Auto-refresh every 10 seconds so new requests appear without manual refresh -->
+    <meta http-equiv="refresh" content="10">
     <title>Pending Requests - Car Rental System</title>
     <style>
         * {
@@ -249,7 +251,7 @@
         {% endif %}
 
         <div class="back-link">
-            <a href="{% url 'home' %}" class="btn btn-secondary">Back to Dashboard</a>
+            <a href="{% url 'car_list' %}" class="btn btn-secondary">Back to Dashboard</a>
         </div>
     </div>
 </body>

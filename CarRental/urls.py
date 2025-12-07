@@ -24,6 +24,10 @@ urlpatterns = [
     
     #  NEW CRITICAL API PATHS ADDED HERE 
     path('api/submit-rental-request/', app_views.api_submit_rental_request, name='api_submit_rental_request'),
+    path('api/create-rental-transaction/', app_views.api_create_rental_transaction, name='api_create_rental_transaction'),
+    path('api/submit-payment/', app_views.api_submit_payment, name='api_submit_payment'),
+    path('api/notifications/', app_views.api_get_notifications, name='api_get_notifications'),
+    path('api/notifications/mark-read/', app_views.api_mark_notification_read, name='api_mark_notification_read'),
     
     #  INCLUDE APP URLS (Staff views and CRUD) 
     path('cars/', include('CarRentalApp.urls')),

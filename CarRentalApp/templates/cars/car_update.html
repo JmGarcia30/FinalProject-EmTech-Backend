@@ -160,7 +160,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Edit Car 🛠️</h1>
+        <h1>Edit Car</h1>
         
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
@@ -206,7 +206,7 @@
             </div>
 
             <div class="form-group">
-                <label for="rental_rate_per_day">Rate per Day ($)</label>
+                <label for="rental_rate_per_day">Rate per Day (₱)</label>
                 <input type="number" id="rental_rate_per_day" name="rental_rate_per_day" step="0.01" value="{{ car.rental_rate_per_day }}" required>
             </div>
 

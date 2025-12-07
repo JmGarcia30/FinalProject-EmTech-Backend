@@ -16,5 +16,13 @@ urlpatterns = [
     
     # NEW STAFF ACTIVE RENTALS MANAGEMENT 
     path('rentals/active/', views.active_rentals_view, name='active_rentals'), 
-    path('rentals/complete/<int:transaction_id>/', views.request_complete, name='request_complete'), 
+    path('rentals/complete/<int:transaction_id>/', views.request_complete, name='request_complete'),
+    
+    # API ENDPOINTS FOR MOBILE APP
+    path('api/cars/', views.api_car_list, name='api_car_list'),
+    path('api/submit-rental-request/', views.api_submit_rental_request, name='api_submit_rental_request'),
+    path('api/customers/signup/', views.api_customer_signup, name='api_customer_signup'),
+    path('api/customers/login/', views.api_customer_login, name='api_customer_login'),
+    path('api/create-rental-transaction/', views.api_create_rental_transaction, name='api_create_rental_transaction'),
+    path('api/submit-payment/', views.api_submit_payment, name='api_submit_payment'),
 ]

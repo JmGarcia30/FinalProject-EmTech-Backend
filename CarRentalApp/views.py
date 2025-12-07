@@ -4,7 +4,7 @@ from django.db import transaction
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Car, Customer, RentalTransaction, RentalRequest 
+from .models import Car, Customer, RentalTransaction, RentalRequest, Payment, Notification
 from .serializers import CarSerializer, CustomerSerializer 
 from decimal import Decimal 
 from datetime import date 
@@ -76,12 +76,20 @@ def request_approve(request, request_id):
             start_date=rental_request.pickup_date,
             end_date=rental_request.return_date,
             total_cost=total_cost, 
-            status='ONGOING'
+            status='Ongoing'
         )
 
-        # 4. Take the car off the market by setting its status to RENTED.
-        car.status = 'RENTED' 
+        # 4. Take the car off the market by setting its status to Rented.
+        car.status = 'Rented' 
         car.save()
+        
+        # 5. Create notification for customer
+        Notification.objects.create(
+            customer=rental_request.customer,
+            rental_request=rental_request,
+            title='Rental Request Approved',
+            message=f'Your rental request for {car.brand} {car.model} has been approved! Pickup date: {rental_request.pickup_date}.'
+        )
         
         return redirect('pending_requests') 
         
@@ -102,6 +110,14 @@ def request_reject(request, request_id):
         rental_request.status = 'REJECTED'
         rental_request.save()
         
+        # 3. Create notification for customer
+        Notification.objects.create(
+            customer=rental_request.customer,
+            rental_request=rental_request,
+            title='Rental Request Rejected',
+            message=f'Your rental request for {rental_request.car.brand} {rental_request.car.model} has been rejected.'
+        )
+        
         return redirect('pending_requests')
         
     return redirect('pending_requests')
@@ -116,10 +132,10 @@ def request_complete(request, transaction_id):
     """
     if request.method == "POST": 
         # Find the active transaction record.
-        rental = get_object_or_404(RentalTransaction, id=transaction_id, status='ONGOING')
+        rental = get_object_or_404(RentalTransaction, id=transaction_id, status='Ongoing')
         
-        # 1. Update the transaction status to COMPLETED.
-        rental.status = 'COMPLETED'
+        # 1. Update the transaction status to Completed.
+        rental.status = 'Completed'
         rental.save()
         
         # 2. Put the car back into the available pool.
@@ -137,7 +153,7 @@ def active_rentals_view(request):
     """
     Staff view to list all current rentals (transactions marked 'ONGOING').
     """
-    active_rentals = RentalTransaction.objects.filter(status='ONGOING').select_related('car', 'customer').order_by('end_date')
+    active_rentals = RentalTransaction.objects.filter(status='Ongoing').select_related('car', 'customer').order_by('end_date')
         
     context = {
         'active_rentals': active_rentals
@@ -396,4 +412,244 @@ def api_customer_login(request):
         # If no customer matches the email.
         return Response({
             'error': 'Customer not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+
+# --------------------------------------------------------------------------
+# PAYMENT API VIEWS
+# --------------------------------------------------------------------------
+
+@api_view(['POST'])
+@transaction.atomic
+def api_submit_payment(request):
+    """
+    Handles payment submission from the mobile app.
+    Creates a Payment record linked to a rental transaction.
+    """
+    data = request.data
+    transaction_id = data.get('transaction_id')
+    amount_paid = data.get('amount_paid')
+    method = data.get('method')  # Cash, GCash, Card, Check, etc.
+    
+    # Validate required fields
+    if not all([transaction_id, amount_paid, method]):
+        return Response({
+            'error': 'Missing required fields: transaction_id, amount_paid, and method.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        # Get the rental transaction
+        rental_transaction = RentalTransaction.objects.get(id=transaction_id)
+        
+        # Validate amount
+        try:
+            amount_decimal = Decimal(str(amount_paid))
+            if amount_decimal <= 0:
+                return Response({
+                    'error': 'Payment amount must be greater than zero.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+        except (ValueError, TypeError):
+            return Response({
+                'error': 'Invalid payment amount format.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Create payment record
+        payment = Payment.objects.create(
+            transaction=rental_transaction,
+            amount_paid=amount_decimal,
+            method=method
+        )
+        
+        return Response({
+            'message': 'Payment submitted successfully.',
+            'payment_id': payment.id,
+            'amount_paid': str(payment.amount_paid),
+            'method': payment.method,
+            'payment_date': payment.payment_date.isoformat()
+        }, status=status.HTTP_201_CREATED)
+        
+    except RentalTransaction.DoesNotExist:
+        return Response({
+            'error': 'Rental transaction not found.'
+        }, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        print(f"Error processing payment: {e}")
+        return Response({
+            'error': f'A server error occurred: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@transaction.atomic
+def api_create_rental_transaction(request):
+    """
+    Creates a rental transaction directly with customer info for immediate payment.
+    This is different from rental request which requires staff approval.
+    """
+    data = request.data
+    car_id = data.get('car_id')
+    customer_data = data.get('customer_data', {})
+    pickup_date = data.get('pickup_date')
+    return_date = data.get('return_date')
+    
+    print(f"DEBUG: Received data: car_id={car_id}, customer_data={customer_data}, pickup={pickup_date}, return={return_date}")
+    
+    # Validate required fields
+    if not all([car_id, customer_data, pickup_date, return_date, 
+                customer_data.get('license_number'), customer_data.get('email')]):
+        print(f"DEBUG: Validation failed - car_id: {car_id}, license: {customer_data.get('license_number')}, email: {customer_data.get('email')}")
+        return Response({
+            'error': 'Missing required fields for rental transaction.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        # Get the car
+        car = Car.objects.get(id=car_id)
+        
+        email = customer_data.get('email')
+        license_number = customer_data.get('license_number')
+
+        # Find or Create the Customer
+        try:
+            customer = Customer.objects.get(email=email)
+            customer.license_number = license_number
+            customer.first_name = customer_data.get('first_name', customer.first_name)
+            customer.last_name = customer_data.get('last_name', customer.last_name)
+            customer.phone = customer_data.get('phone', customer.phone)
+            customer.address = customer_data.get('address', customer.address)
+            customer.save()
+        except Customer.DoesNotExist:
+            customer = Customer.objects.create(
+                license_number=license_number,
+                first_name=customer_data.get('first_name'),
+                last_name=customer_data.get('last_name'),
+                email=customer_data.get('email'),
+                phone=customer_data.get('phone'),
+                address=customer_data.get('address'),
+                password='changepassword123',
+            )
+
+        # Calculate total cost
+        try:
+            from datetime import datetime
+            start = datetime.strptime(pickup_date, '%Y-%m-%d').date()
+            end = datetime.strptime(return_date, '%Y-%m-%d').date()
+            days = (end - start).days
+            
+            if days <= 0:
+                return Response({
+                    'error': 'Return date must be after pickup date.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            
+            total_cost = Decimal(days) * Decimal(car.rental_rate_per_day)
+        except Exception as e:
+            return Response({
+                'error': f'Error calculating rental cost: {str(e)}'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a pending RentalRequest so staff can see it
+        rental_request = RentalRequest.objects.create(
+            car=car,
+            customer=customer,
+            pickup_date=start,
+            return_date=end,
+            status='PENDING'
+        )
+
+        # Create the RentalTransaction
+        rental_transaction = RentalTransaction.objects.create(
+            car=car,
+            customer=customer,
+            start_date=start,
+            end_date=end,
+            total_cost=total_cost,
+            status='Ongoing'
+        )
+
+        return Response({
+            'message': 'Rental transaction created successfully.',
+            'transaction_id': rental_transaction.id,
+            'rental_request_id': rental_request.id,
+            'total_cost': str(rental_transaction.total_cost),
+            'car_id': car.id,
+            'customer_id': customer.id
+        }, status=status.HTTP_201_CREATED)
+
+    except Car.DoesNotExist:
+        return Response({
+            'error': 'Car not found.'
+        }, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        print(f"Error creating rental transaction: {e}")
+        return Response({
+            'error': f'A server error occurred: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# --------------------------------------------------------------------------
+# NOTIFICATION API VIEWS
+# --------------------------------------------------------------------------
+
+@api_view(['GET'])
+def api_get_notifications(request):
+    """
+    Get all notifications for a customer by email.
+    """
+    email = request.GET.get('email')
+    
+    if not email:
+        return Response({
+            'error': 'Email parameter is required.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        customer = Customer.objects.get(email=email)
+        notifications = Notification.objects.filter(customer=customer).select_related('rental_request', 'rental_request__car')
+        
+        notifications_data = [{
+            'id': notif.id,
+            'title': notif.title,
+            'message': notif.message,
+            'is_read': notif.is_read,
+            'created_at': notif.created_at.isoformat(),
+            'car_brand': notif.rental_request.car.brand,
+            'car_model': notif.rental_request.car.model,
+            'request_status': notif.rental_request.status,
+        } for notif in notifications]
+        
+        return Response({
+            'notifications': notifications_data,
+            'unread_count': notifications.filter(is_read=False).count()
+        }, status=status.HTTP_200_OK)
+        
+    except Customer.DoesNotExist:
+        return Response({
+            'error': 'Customer not found.'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['POST'])
+def api_mark_notification_read(request):
+    """
+    Mark a notification as read.
+    """
+    notification_id = request.data.get('notification_id')
+    
+    if not notification_id:
+        return Response({
+            'error': 'notification_id is required.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        notification = Notification.objects.get(id=notification_id)
+        notification.is_read = True
+        notification.save()
+        
+        return Response({
+            'message': 'Notification marked as read.'
+        }, status=status.HTTP_200_OK)
+        
+    except Notification.DoesNotExist:
+        return Response({
+            'error': 'Notification not found.'
         }, status=status.HTTP_404_NOT_FOUND)
