@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-*+q4061xrp5df3fe7uklkwn_+8u*e-1&(dt+hquvlo69_o)%0z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', 'https://gowheels-backend.onrender.com']
 
 
 # Application definition
@@ -54,6 +54,12 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 CORS_ALLOW_ALL_ORIGINS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://gowheels-backend.onrender.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
 
 ROOT_URLCONF = 'CarRental.urls'
 
